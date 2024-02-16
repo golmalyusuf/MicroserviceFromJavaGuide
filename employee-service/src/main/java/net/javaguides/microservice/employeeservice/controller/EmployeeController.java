@@ -1,6 +1,7 @@
 package net.javaguides.microservice.employeeservice.controller;
 
 import lombok.AllArgsConstructor;
+import net.javaguides.microservice.employeeservice.dto.APIResponseDto;
 import net.javaguides.microservice.employeeservice.dto.EmployeeDto;
 import net.javaguides.microservice.employeeservice.exception.ErrorDetails;
 import net.javaguides.microservice.employeeservice.exception.ResourceNotFound;
@@ -26,9 +27,9 @@ public class EmployeeController {
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<EmployeeDto> getEmployeeById(@PathVariable Long id){
-        EmployeeDto employeeById = employeeService.getEmployeeById(id);
-        return new ResponseEntity<>(employeeById, HttpStatus.OK);
+    public ResponseEntity<APIResponseDto> getEmployeeById(@PathVariable Long id){
+        APIResponseDto apiResponseDto = employeeService.getEmployeeById(id);
+        return new ResponseEntity<>(apiResponseDto, HttpStatus.OK);
     }
     /*this method is for handling local custom exceptions*/
     /*@ExceptionHandler(ResourceNotFound.class)

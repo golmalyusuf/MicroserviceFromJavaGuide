@@ -1,13 +1,17 @@
 package net.javaguides.microservice.employeeservice.serviceImpl;
 
 import lombok.AllArgsConstructor;
+import net.javaguides.microservice.employeeservice.dto.APIResponseDto;
+import net.javaguides.microservice.employeeservice.dto.DepartmentDto;
 import net.javaguides.microservice.employeeservice.dto.EmployeeDto;
 import net.javaguides.microservice.employeeservice.entities.Employee;
 import net.javaguides.microservice.employeeservice.exception.ResourceNotFound;
 import net.javaguides.microservice.employeeservice.repository.EmployeeRepository;
 import net.javaguides.microservice.employeeservice.servuce.EmployeeService;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @AllArgsConstructor
@@ -16,6 +20,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeRepository employeeRepository;
 
     private ModelMapper modelMapper;
+
+    private RestTemplate restTemplate;
+
     @Override
     public EmployeeDto saveEmployee(EmployeeDto employeeDto) {
         /*Employee employeeBuild = Employee.builder()
@@ -34,7 +41,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeDto getEmployeeById(Long id) {
+    public APIResponseDto getEmployeeById(Long id) {
         Employee employee = employeeRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFound("Employee", "id", Long.toString(id))
         );
@@ -43,7 +50,15 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .lastName(employee.getLastName())
                 .firstName(employee.getFirstName())
                 .build();*/
+        System.out.println("  53 Line No "+"localhost:8080/api/departments/get/" + employee.getDepartmentCode());
+        ResponseEntity<DepartmentDto> responseEntity = restTemplate.getForEntity("http://localhost:8080/api/departments/get/" + employee.getDepartmentCode(), DepartmentDto.class);
+        DepartmentDto departmentDto = responseEntity.getBody();
+        //employee.setDepartmentCode(departmentDto.getDepartmentCode());
         EmployeeDto employeeDtoBuild = modelMapper.map(employee, EmployeeDto.class);
-        return employeeDtoBuild;
+        APIResponseDto apiResponseDto =  APIResponseDto.builder()
+                .employeeDto(employeeDtoBuild)
+                .departmentDto(departmentDto).build();
+
+        return apiResponseDto;
     }
 }
